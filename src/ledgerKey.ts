@@ -62,6 +62,13 @@ export class LedgerKey extends PrivateKey {
     }
 
     /**
+     * Synchronious signing is not supported with Ledger. Use signAsync instead.
+     */
+    sign(msg: string, schema?: SignatureScheme, publicKeyId?: string): Signature {
+        throw new Error('Synchronious signing is not supported with Ledger.');
+    }
+
+    /**
      * Signs the data with the Ledger HW.
      *
      * If the signature schema is not provided, the default schema for this key type is used.
@@ -70,7 +77,7 @@ export class LedgerKey extends PrivateKey {
      * @param schema Signing schema to use
      * @param publicKeyId Id of public key
      */
-    async sign(msg: string, schema?: SignatureScheme, publicKeyId?: string): Promise<Signature> {
+    async signAsync(msg: string, schema?: SignatureScheme, publicKeyId?: string): Promise<Signature> {
         if (schema === undefined) {
             schema = SignatureScheme.ECDSAwithSHA256;
         }

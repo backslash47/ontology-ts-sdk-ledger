@@ -32,8 +32,3 @@ export class LedgerKeyDeserializer extends KeyDeserializer {
         return new LedgerKey(json.external.index, json.external.pKey);
     }
 }
-
-/**
- * Registers the Ledger key deserializer.
- */
-Crypto.registerKeyDeserializer(new LedgerKeyDeserializer());
