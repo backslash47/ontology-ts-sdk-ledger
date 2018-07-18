@@ -1,5 +1,5 @@
 {
-  "name": "ontology-ts-sdk-ledger",
+  "name": "@ont-community/ontology-ts-sdk-ledger",
   "version": "1.0.0",
   "description": "",
   "main": "./lib/index.js",
@@ -24,6 +24,14 @@
   },
   "author": "Matus Zamborsky <zamborsky@gmail.com>",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/OntologyCommunityDevelopers/ontology-ts-sdk-ledger"
+  },
+  "bugs": {
+    "url": "https://github.com/OntologyCommunityDevelopers/ontology-ts-sdk-ledger/issues"
+  },
+  "homepage": "https://github.com/OntologyCommunityDevelopers/ontology-ts-sdk-ledger",
   "devDependencies": {
     "@types/node": "^8.5.2",
     "@types/promise-timeout": "^1.3.0",
