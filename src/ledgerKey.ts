@@ -16,7 +16,7 @@
  * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 import * as elliptic from 'elliptic';
-import { Crypto } from 'ont-sdk-ts';
+import { Crypto } from 'ontology-ts-sdk';
 import { computesSignature, getPublicKey } from './ledgerProxy';
 
 import Address = Crypto.Address;

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { Crypto } from 'ont-sdk-ts';
+import { Crypto } from 'ontology-ts-sdk';
 import JsonKey = Crypto.JsonKey;
 import KeyDeserializer = Crypto.KeyDeserializer;
 import { LedgerKey } from './ledgerKey';

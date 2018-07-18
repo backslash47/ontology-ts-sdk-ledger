@@ -27,7 +27,7 @@ npm install --global yarn
 
 #### Download
 ```
-git clone 'https://github.com/OntologyCommunityDevelopers/ont-sdk-ts-ledger.git'
+git clone 'https://github.com/OntologyCommunityDevelopers/ontology-ts-sdk-ledger.git'
 ```
 
 #### Development build
