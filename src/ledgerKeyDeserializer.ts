@@ -23,7 +23,7 @@ import { LedgerKey } from './ledgerKey';
 /**
  * Ledger private key deserializer.
  */
-export class LedgerKeyDeserializer extends KeyDeserializer {
+export class LedgerKeyDeserializer implements KeyDeserializer {
     getType(): string {
         return 'LEDGER';
     }
