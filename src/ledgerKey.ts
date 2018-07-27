@@ -29,44 +29,38 @@ import PublicKey = Crypto.PublicKey;
 import Signature = Crypto.Signature;
 import SignatureScheme = Crypto.SignatureScheme;
 
-/**
- * Private Key implementation delegating signing and public key derivation to Ledger HW.
- */
-export class LedgerKey extends PrivateKey {
-    /**
-     * Initializes Ledger Key based on the BIP44 index number.
-     *
-     * The key is compressed, otherwise Address.fromPubKey will give wrong results.
-     *
-     * @param index BIP44 index
-     */
-    static async create(index: number): Promise<LedgerKey> {
-        const uncompressed = await getPublicKey(index);
-
-        const ec = new elliptic.ec(CurveLabel.SECP256R1.preset);
-        const keyPair = ec.keyFromPublic(uncompressed, 'hex');
-        const compressed = keyPair.getPublic(true, 'hex');
-
-        return new LedgerKey(index, compressed);
-    }
-
+export interface LedgerKey extends PrivateKey {
     publicKey: PublicKey;   // transient
 
     index: number;
 
-    constructor(index: number, pKey: string) {
-        super('', KeyType.ECDSA, new KeyParameters(CurveLabel.SECP256R1));
+    type: 'LEDGER';
+}
 
-        this.index = index;
-        this.publicKey = new PublicKey(pKey, this.algorithm, this.parameters);
-    }
+export async function create(index: number): Promise<LedgerKey> {
+    const uncompressed = await getPublicKey(index);
+
+    const ec = new elliptic.ec(CurveLabel.SECP256R1.preset);
+    const keyPair = ec.keyFromPublic(uncompressed, 'hex');
+    const compressed = keyPair.getPublic(true, 'hex');
+
+    return createExisting(index, compressed);
+}
+
+export function createExisting(index: number, pKey: string): LedgerKey {
+    const privateKey = new PrivateKey('', KeyType.ECDSA, new KeyParameters(CurveLabel.SECP256R1));
+    const ledgerKey = privateKey as LedgerKey;
+
+    ledgerKey.index = index;
+    ledgerKey.publicKey = new PublicKey(pKey, privateKey.algorithm, privateKey.parameters);
+    ledgerKey.type = 'LEDGER';
 
     /**
      * Synchronious signing is not supported with Ledger. Use signAsync instead.
      */
-    sign(msg: string, schema?: SignatureScheme, publicKeyId?: string): Signature {
+    ledgerKey.sign = function sign(msg: string, schema?: SignatureScheme, publicKeyId?: string): Signature {
         throw new Error('Synchronious signing is not supported with Ledger.');
-    }
+    };
 
     /**
      * Signs the data with the Ledger HW.
@@ -77,7 +71,8 @@ export class LedgerKey extends PrivateKey {
      * @param schema Signing schema to use
      * @param publicKeyId Id of public key
      */
-    async signAsync(msg: string, schema?: SignatureScheme, publicKeyId?: string): Promise<Signature> {
+    // tslint:disable-next-line:max-line-length
+    ledgerKey.signAsync = async function signAsync(msg: string, schema?: SignatureScheme, publicKeyId?: string): Promise<Signature> {
         if (schema === undefined) {
             schema = SignatureScheme.ECDSAwithSHA256;
         }
@@ -89,28 +84,28 @@ export class LedgerKey extends PrivateKey {
         const signed = await computesSignature(this.index, msg);
 
         return new Signature(schema, signed, publicKeyId);
-    }
+    };
 
     /**
      * Derives Public key out of Private key.
      *
      * Uses cached public key, so no further communication with the Ledger HW is necessary.
      */
-    getPublicKey(): PublicKey {
+    ledgerKey.getPublicKey = function getPublicKey2(): PublicKey {
         return this.publicKey;
-    }
+    };
 
     /**
      * Only ECDSAwithSHA256 is supported for Ledger key.
      */
-    isSchemaSupported(schema: SignatureScheme): boolean {
+    ledgerKey.isSchemaSupported = function isSchemaSupported(schema: SignatureScheme): boolean {
         return schema === SignatureScheme.ECDSAwithSHA256;
-    }
+    };
 
     /**
      * Gets JSON representation of the Ledger Key.
      */
-    serializeJson(): JsonKey {
+    ledgerKey.serializeJson = function serializeJson(): JsonKey {
         return {
             algorithm: this.algorithm.label,
             external: {
@@ -121,19 +116,21 @@ export class LedgerKey extends PrivateKey {
             parameters: this.parameters.serializeJson(),
             key: null
         };
-    }
+    };
 
     /**
      * Decryption is not supported for Ledger Key. This operation is NOOP.
      */
-    decrypt(keyphrase: string, address: Address, salt: string, params?: any): PrivateKey {
+    ledgerKey.decrypt = function decrypt(keyphrase: string, address: Address, salt: string, params?: any): PrivateKey {
         return this;
-    }
+    };
 
     /**
      * Encryption is not supported for Ledger Key. This operation is NOOP.
      */
-    encrypt(keyphrase: string, address: Address, salt: string, params?: any): PrivateKey {
+    ledgerKey.encrypt = function encrypt(keyphrase: string, address: Address, salt: string, params?: any): PrivateKey {
         return this;
-    }
+    };
+
+    return ledgerKey;
 }

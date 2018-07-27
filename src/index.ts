@@ -1,4 +1,4 @@
-export { LedgerKey } from './ledgerKey';
+export { LedgerKey, create } from './ledgerKey';
 export { LedgerTransport } from './ledgerTransport';
 export { LedgerTransportNode } from './ledgerTransportNode';
 export { LedgerTransportIframe } from './ledgerTransportIframe';

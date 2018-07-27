@@ -18,7 +18,8 @@
 import { Crypto } from 'ontology-ts-sdk';
 import JsonKey = Crypto.JsonKey;
 import KeyDeserializer = Crypto.KeyDeserializer;
-import { LedgerKey } from './ledgerKey';
+import PrivateKey = Crypto.PrivateKey;
+import { createExisting } from './ledgerKey';
 
 /**
  * Ledger private key deserializer.
@@ -28,7 +29,7 @@ export class LedgerKeyDeserializer implements KeyDeserializer {
         return 'LEDGER';
     }
 
-    deserialize(json: JsonKey): LedgerKey {
-        return new LedgerKey(json.external.index, json.external.pKey);
+    deserialize(json: JsonKey): PrivateKey {
+        return createExisting(json.external.index, json.external.pKey);
     }
 }
