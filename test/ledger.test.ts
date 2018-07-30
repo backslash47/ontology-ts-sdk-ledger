@@ -1,14 +1,15 @@
-import * as CONST from '../src/consts';
-import { Address, CurveLabel, KeyType, SignatureScheme } from '../src/crypto';
-import { LedgerKey } from '../src/crypto/ledger';
-import * as OntAssetTxBuilder from '../src/smartcontract/nativevm/ontAssetTxBuilder';
-import * as utils from '../src/utils';
+import { CONST, Crypto, OntAssetTxBuilder, utils } from 'ontology-ts-sdk';
+import Address = Crypto.Address;
+import CurveLabel = Crypto.CurveLabel;
+import KeyType = Crypto.KeyType;
+import SignatureScheme = Crypto.SignatureScheme;
+import { create } from '../src/ledgerKey';
 
 // tslint:disable : no-console
 describe('test Ledger', () => {
 
     test('create Ledger key', async () => {
-        const key = await LedgerKey.create(0);
+        const key = await create(0);
         const pKey = key.getPublicKey();
 
         expect(pKey).toBeDefined();
@@ -18,10 +19,10 @@ describe('test Ledger', () => {
     });
 
     test('create multiple Ledger keys', async () => {
-        const key1 = await LedgerKey.create(0);
+        const key1 = await create(0);
         const pKey1 = key1.getPublicKey();
 
-        const key2 = await LedgerKey.create(1);
+        const key2 = await create(1);
         const pKey2 = key2.getPublicKey();
 
         expect(pKey1.key === pKey2.key).toBeFalsy();
@@ -37,17 +38,15 @@ describe('test Ledger', () => {
             `${CONST.DEFAULT_GAS_LIMIT}`
         );
 
-        const data = tx.serialize();
-
-        const key = await LedgerKey.create(0);
+        const key = await create(0);
         const pKey = key.getPublicKey();
 
-        const signature = await key.sign(data);
+        const signature = await key.signAsync(tx);
 
         expect(signature.algorithm).toBe(SignatureScheme.ECDSAwithSHA256);
         expect(signature.value).toBeDefined();
 
-        const verifyResult = await pKey.verify(data, signature);
+        const verifyResult = await pKey.verify(tx, signature);
         expect(verifyResult).toBeTruthy();
     }, 20000);
 

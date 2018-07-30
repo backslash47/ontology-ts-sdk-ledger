@@ -26,6 +26,7 @@ import KeyParameters = Crypto.KeyParameters;
 import KeyType = Crypto.KeyType;
 import PrivateKey = Crypto.PrivateKey;
 import PublicKey = Crypto.PublicKey;
+import Signable = Crypto.Signable;
 import Signature = Crypto.Signature;
 import SignatureScheme = Crypto.SignatureScheme;
 
@@ -58,7 +59,7 @@ export function createExisting(index: number, pKey: string): LedgerKey {
     /**
      * Synchronious signing is not supported with Ledger. Use signAsync instead.
      */
-    ledgerKey.sign = function sign(msg: string, schema?: SignatureScheme, publicKeyId?: string): Signature {
+    ledgerKey.sign = function sign(msg: string | Signable, schema?: SignatureScheme, publicKeyId?: string): Signature {
         throw new Error('Synchronious signing is not supported with Ledger.');
     };
 
@@ -72,13 +73,18 @@ export function createExisting(index: number, pKey: string): LedgerKey {
      * @param publicKeyId Id of public key
      */
     // tslint:disable-next-line:max-line-length
-    ledgerKey.signAsync = async function signAsync(msg: string, schema?: SignatureScheme, publicKeyId?: string): Promise<Signature> {
+    ledgerKey.signAsync = async function signAsync(msg: string | Signable, schema?: SignatureScheme, publicKeyId?: string): Promise<Signature> {
         if (schema === undefined) {
             schema = SignatureScheme.ECDSAwithSHA256;
         }
 
         if (!this.isSchemaSupported(schema)) {
             throw new Error('Signature schema does not match key type.');
+        }
+
+        // retrieves content to sign if not provided directly
+        if (typeof msg !== 'string') {
+            msg = msg.getSignContent();
         }
 
         const signed = await computesSignature(this.index, msg);
