@@ -1,3 +1,4 @@
+import 'babel-polyfill';
 import { CONST, Crypto, OntAssetTxBuilder, utils } from 'ontology-ts-sdk';
 import Address = Crypto.Address;
 import CurveLabel = Crypto.CurveLabel;
