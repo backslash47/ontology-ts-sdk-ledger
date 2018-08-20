@@ -1,6 +1,6 @@
 {
   "name": "@ont-community/ontology-ts-sdk-ledger",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "",
   "main": "./lib/index.js",
   "types": "./lib/types/index.d.ts",

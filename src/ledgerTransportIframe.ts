@@ -63,7 +63,7 @@ export class LedgerTransportIframe implements LedgerTransport {
             p2: params.p2,
             data,
             statusList
-        });
+        }, 30000);
 
         return response.result;
     }

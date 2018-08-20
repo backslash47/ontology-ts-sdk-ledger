@@ -120,7 +120,7 @@ export function createExisting(index: number, neo: boolean, pKey: string): Ledge
             algorithm: this.algorithm.label,
             external: {
                 index: this.index,
-                neo: this.index,
+                neo: this.neo,
                 pKey: this.publicKey.key,
                 type: 'LEDGER'
             },
