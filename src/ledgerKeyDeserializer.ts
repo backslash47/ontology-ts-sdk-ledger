@@ -30,6 +30,6 @@ export class LedgerKeyDeserializer implements KeyDeserializer {
     }
 
     deserialize(json: JsonKey): PrivateKey {
-        return createExisting(json.external.index, json.external.pKey);
+        return createExisting(json.external.index, json.external.neo, json.external.pKey);
     }
 }

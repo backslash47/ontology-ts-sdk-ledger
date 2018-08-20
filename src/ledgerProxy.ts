@@ -35,7 +35,7 @@ export function setLedgerTransport(transport: LedgerTransport) {
  */
 export async function isLedgerSupported() {
     try {
-        await getPublicKey(0);
+        await getPublicKey(0, false);
         return true;
     } catch (e) {
         // tslint:disable-next-line:no-console
@@ -49,11 +49,11 @@ export async function isLedgerSupported() {
  *
  * @param index Index of the public key
  */
-export async function getPublicKey(index: number) {
+export async function getPublicKey(index: number, neo: boolean) {
     await transportInternal.open();
 
     try {
-        const path = BIP44(index);
+        const path = BIP44(index, neo);
         const params = { cla: 0x80, ins: 0x04, p1: 0x00, p2: 0x00 };
         const result = await transportInternal.send(params, path, [VALID_STATUS]);
         return result.substring(0, 130);
@@ -67,13 +67,12 @@ export async function getPublicKey(index: number) {
 /**
  * Computes ECDSA signature of the data from Ledger using index.
  *
- * @param transportType Type of transport (HID - Node.JS/Electron, U2F - Browser)
  */
-export async function computesSignature(index: number, data: string): Promise<string> {
+export async function computesSignature(index: number, neo: boolean, data: string): Promise<string> {
     await transportInternal.open();
 
     try {
-        const path = BIP44(index);
+        const path = BIP44(index, neo);
         data += path;
 
         const chunks = data.match(/.{1,510}/g) || [];
@@ -110,12 +109,14 @@ export async function computesSignature(index: number, data: string): Promise<st
  * Constructs BIP44 address path from index.
  *
  * @param index Address index
+ * @param neo Build neo compatible bip
  */
-function BIP44(index: number = 0) {
+function BIP44(index: number = 0, neo: boolean) {
     const acctNumber = index.toString(16).padStart(8, '0');
+    const coin = neo ? '80000378' : '80000400';
     return (
         '8000002C' +      // purpose
-        '80000378' +      // coin type NEO
+        coin +            // coin type
         '80000000' +      // account
         '00000000' +      // change (external)
         acctNumber        // Zero padded account index

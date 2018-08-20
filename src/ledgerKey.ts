@@ -16,7 +16,7 @@
  * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 import * as elliptic from 'elliptic';
-import { Crypto } from 'ontology-ts-sdk';
+import { Crypto, Transaction } from 'ontology-ts-sdk';
 import { computesSignature, getPublicKey } from './ledgerProxy';
 
 import Address = Crypto.Address;
@@ -34,25 +34,27 @@ export interface LedgerKey extends PrivateKey {
     publicKey: PublicKey;   // transient
 
     index: number;
+    neo: boolean;
 
     type: 'LEDGER';
 }
 
-export async function create(index: number): Promise<LedgerKey> {
-    const uncompressed = await getPublicKey(index);
+export async function create(index: number, neo: boolean): Promise<LedgerKey> {
+    const uncompressed = await getPublicKey(index, neo);
 
     const ec = new elliptic.ec(CurveLabel.SECP256R1.preset);
     const keyPair = ec.keyFromPublic(uncompressed, 'hex');
     const compressed = keyPair.getPublic(true, 'hex');
 
-    return createExisting(index, compressed);
+    return createExisting(index, neo, compressed);
 }
 
-export function createExisting(index: number, pKey: string): LedgerKey {
+export function createExisting(index: number, neo: boolean, pKey: string): LedgerKey {
     const privateKey = new PrivateKey('', KeyType.ECDSA, new KeyParameters(CurveLabel.SECP256R1));
     const ledgerKey = privateKey as LedgerKey;
 
     ledgerKey.index = index;
+    ledgerKey.neo = neo;
     ledgerKey.publicKey = new PublicKey(pKey, privateKey.algorithm, privateKey.parameters);
     ledgerKey.type = 'LEDGER';
 
@@ -83,11 +85,13 @@ export function createExisting(index: number, pKey: string): LedgerKey {
         }
 
         // retrieves content to sign if not provided directly
-        if (typeof msg !== 'string') {
-            msg = msg.getSignContent();
+        if (msg instanceof Transaction) {
+            msg = msg.serializeUnsignedData();
+        } else {
+            throw new Error('Only Transaction signature is supported in ledger');
         }
 
-        const signed = await computesSignature(this.index, msg);
+        const signed = await computesSignature(this.index, neo, msg);
 
         return new Signature(schema, signed, publicKeyId);
     };
@@ -116,6 +120,7 @@ export function createExisting(index: number, pKey: string): LedgerKey {
             algorithm: this.algorithm.label,
             external: {
                 index: this.index,
+                neo: this.index,
                 pKey: this.publicKey.key,
                 type: 'LEDGER'
             },

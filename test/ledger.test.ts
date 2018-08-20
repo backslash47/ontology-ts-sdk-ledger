@@ -20,10 +20,10 @@ describe('test Ledger', () => {
     });
 
     test('create multiple Ledger keys', async () => {
-        const key1 = await create(0);
+        const key1 = await create(0, false);
         const pKey1 = key1.getPublicKey();
 
-        const key2 = await create(1);
+        const key2 = await create(1, false);
         const pKey2 = key2.getPublicKey();
 
         expect(pKey1.key === pKey2.key).toBeFalsy();
@@ -39,7 +39,7 @@ describe('test Ledger', () => {
             `${CONST.DEFAULT_GAS_LIMIT}`
         );
 
-        const key = await create(0);
+        const key = await create(0, false);
         const pKey = key.getPublicKey();
 
         const signature = await key.signAsync(tx);
