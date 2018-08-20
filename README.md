@@ -50,7 +50,7 @@ Because Chrome allows communication with the Ledger only from HTTPS loaded page 
 Ledger.setLedgerTransport(new Ledger.LedgerTransportIframe('https://drxwrxomfjdx5.cloudfront.net/forwarder.html', true));
 ````
 
-To use your Ledger, you also needs Ontology Ledger App located at https://github.com/xavizhao/blue-app-ont . It is not yet installable from Ledger Manager, so manual installation is necessary. 
+To use your Ledger, you also needs Official Ontology Ledger App installed on your Ledger.
 
 ## Built With
 
