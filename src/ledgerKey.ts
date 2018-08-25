@@ -85,10 +85,10 @@ export function createExisting(index: number, neo: boolean, pKey: string): Ledge
         }
 
         // retrieves content to sign if not provided directly
-        if (msg instanceof Transaction) {
+        if (typeof msg !== 'string') {
             msg = msg.serializeUnsignedData();
         } else {
-            throw new Error('Only Transaction signature is supported in ledger');
+            throw new Error('Only Signable signature is supported in ledger');
         }
 
         const signed = await computesSignature(this.index, neo, msg);
