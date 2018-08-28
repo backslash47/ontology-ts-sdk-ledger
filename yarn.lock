@@ -4655,9 +4655,9 @@ onetime@^2.0.0:
   dependencies:
     mimic-fn "^1.0.0"
 
-ontology-ts-sdk@^0.9.2:
-  version "0.9.2"
-  resolved "https://registry.yarnpkg.com/ontology-ts-sdk/-/ontology-ts-sdk-0.9.2.tgz#f0b1a18e9e04bb6ac80f580ec5c3c27bebf85bf7"
+ontology-ts-sdk@^0.9.4:
+  version "0.9.4"
+  resolved "https://registry.yarnpkg.com/ontology-ts-sdk/-/ontology-ts-sdk-0.9.4.tgz#d48be328e31238d7a2ef0f804636602948cac72d"
   dependencies:
     "@ont-community/hdkey-secp256r1" "^1.0.0"
     "@ont-community/html5-websocket" "^2.0.2"
